@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maratonear - El Mejor Recorrido Palermo</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-color: #FF4500; 
+            --brand-dark: #0A192F;  
+            --brand-light: #ffffff;
+            --map-line-color: #FF4500;
+            --arg-celeste: #75AADB; /* Color Celeste Bandera */
+        }
+
+        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+        #map { height: 100vh; width: 100%; z-index: 1; }
+
+        .brand-header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .brand-logo-text {
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--brand-dark);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 0px white; /* Sombra blanca para el texto oscuro normal */
+        }
+
+        /* Estilos para el efecto Argentina */
+        .letter-arg-a {
+            color: var(--arg-celeste);
+            text-shadow: 2px 2px 0px var(--brand-dark); /* Sombra oscura para contraste */
+        }
+
+        .letter-arg-r {
+            color: #FFFFFF;
+            text-shadow: 2px 2px 0px var(--brand-dark); /* Sombra oscura necesaria para que se lea el blanco */
+        }
+        
+        .brand-dot { color: var(--brand-color); }
+
+        .feature-card {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: white;
+            width: 90%;
+            max-width: 380px;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-bottom: 4px solid var(--brand-color);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover { transform: translateX(-50%) translateY(-5px); }
+
+        .card-tag {
+            background: var(--brand-color);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--brand-dark);
+            line-height: 1.2;
+        }
+
+        .card-subtitle {
+            margin: 5px 0 15px 0;
+            font-size: 13px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .stat-item { text-align: center; }
+        .stat-value { font-weight: 700; font-size: 16px; color: var(--brand-dark); display: block; }
+        .stat-label { font-size: 11px; color: #888; text-transform: uppercase; }
+
+        .runner-marker {
+            display: flex; justify-content: center; align-items: center;
+        }
+        .dot {
+            width: 12px; height: 12px;
+            background-color: var(--brand-color);
+            border-radius: 50%; z-index: 2;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .pulse {
+            position: absolute; width: 12px; height: 12px;
+            background-color: var(--brand-color);
+            border-radius: 50%; z-index: 1; opacity: 0.7;
+            animation: pulse-animation 2s infinite;
+        }
+        @keyframes pulse-animation {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        .start-flag {
+            font-size: 20px;
+            text-align: center;
+            line-height: 1;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));
+        }
+
+        @media (min-width: 768px) {
+            .feature-card { left: 30px; transform: none; bottom: 30px; }
+            .feature-card:hover { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand-header">
+        <div class="brand-logo-text">
+            Maratone<span class="letter-arg-a">a</span><span class="letter-arg-r">R</span><span class="brand-dot">.</span>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <span class="card-tag">Recomendado</span>
+        <h2 class="card-title">Vuelta al Rosedal</h2>
+        <p class="card-subtitle">El clásico de Palermo. Ideal para pasadas rápidas o trote regenerativo.</p>
+        
+        <div class="card-stats">
+            <div class="stat-item">
+                <span class="stat-value">1.6 km</span>
+                <span class="stat-label">Distancia</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">Asfalto</span>
+                <span class="stat-label">Terreno</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">Baja</span>
+                <span class="stat-label">Dificultad</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        var map = L.map('map', { 
+            zoomControl: false, 
+            attributionControl: false 
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        var routePoints = [
+            [-34.570633, -58.421051], [-34.570544, -58.421019], [-34.570446, -58.420949],
+            [-34.570327, -58.420869], [-34.570124, -58.420623], [-34.57006, -58.420519],
+            [-34.569968, -58.420309], [-34.569964, -58.420295], [-34.569891, -58.420026],
+            [-34.569848, -58.419872], [-34.56975, -58.419668], [-34.569562, -58.419415],
+            [-34.569503, -58.419338], [-34.569397, -58.41912], [-34.569324, -58.418864],
+            [-34.569306, -58.418624], [-34.56932, -58.41822], [-34.569361, -58.417942],
+            [-34.569438, -58.417593], [-34.569472, -58.417475], [-34.569649, -58.417041],
+            [-34.56979, -58.416744], [-34.569798, -58.416725], [-34.569846, -58.416622],
+            [-34.570008, -58.416221], [-34.570124, -58.415865], [-34.570144, -58.415804],
+            [-34.570264, -58.41533], [-34.570326, -58.415017], [-34.570449, -58.414405],
+            [-34.570485, -58.414299], [-34.570538, -58.414185], [-34.570615, -58.41406],
+            [-34.570673, -58.413989], [-34.570765, -58.413912], [-34.570882, -58.413848],
+            [-34.571054, -58.413779], [-34.571139, -58.413761], [-34.571212, -58.413747],
+            [-34.571481, -58.413742], [-34.571595, -58.413745], [-34.571776, -58.413773],
+            [-34.571979, -58.41381], [-34.572129, -58.413936], [-34.57233, -58.414314],
+            [-34.57251, -58.41469], [-34.572514, -58.4147], [-34.572693, -58.415093],
+            [-34.572786, -58.415308], [-34.572853, -58.415467], [-34.572919, -58.415704],
+            [-34.572939, -58.415819], [-34.572955, -58.415964], [-34.572919, -58.416251],
+            [-34.572861, -58.416532], [-34.572822, -58.416682], [-34.572771, -58.416836],
+            [-34.572666, -58.417107], [-34.572505, -58.417398], [-34.572381, -58.417593],
+            [-34.572127, -58.417918], [-34.571894, -58.418197], [-34.571813, -58.418315],
+            [-34.57176, -58.418389], [-34.57162, -58.418638], [-34.57146, -58.418949],
+            [-34.57131, -58.419265], [-34.571117, -58.419711], [-34.571006, -58.420058],
+            [-34.570947, -58.420347], [-34.570912, -58.420617], [-34.570858, -58.420831],
+            [-34.570847, -58.420876], [-34.570828, -58.420933], [-34.570782, -58.421],
+            [-34.570729, -58.421044]
+        ];
+
+        var startPoint = routePoints[0];
+        routePoints.push(startPoint);
+
+        var polyline = L.polyline(routePoints, {
+            color: '#FF4500',   
+            weight: 6,
+            opacity: 0.8,
+            lineCap: 'round',
+            lineJoin: 'round',
+            dashArray: '1, 10' 
+        }).addTo(map);
+
+        map.fitBounds(polyline.getBounds(), {
+            paddingTopLeft: [20, 20],
+            paddingBottomRight: [20, 200] 
+        });
+
+        var flagIcon = L.divIcon({
+            className: 'start-flag',
+            html: '🏁',
+            iconSize: [25, 25],
+            iconAnchor: [2, 25] 
+        });
+        L.marker(startPoint, {icon: flagIcon}).addTo(map);
+
+        var pulseIcon = L.divIcon({
+            className: 'runner-marker',
+            html: '<div class="pulse"></div><div class="dot"></div>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+        var runner = L.marker(routePoints[0], {icon: pulseIcon}).addTo(map);
+
+        let speed = 0.03; 
+        let currentSegment = 0;
+        let progress = 0; 
+
+        function animate() {
+            let start = routePoints[currentSegment];
+            let end = routePoints[(currentSegment + 1) % routePoints.length];
+            let dist = Math.sqrt(Math.pow(end[0]-start[0], 2) + Math.pow(end[1]-start[1], 2));
+            
+            if (dist < 0.000001) {
+                currentSegment = (currentSegment + 1) % routePoints.length;
+                requestAnimationFrame(animate);
+                return;
+            }
+
+            let dynamicSpeed = speed / (dist * 1000); 
+            progress += dynamicSpeed;
+
+            if (progress >= 1) {
+                progress = 0;
+                currentSegment = (currentSegment + 1) % routePoints.length;
+                start = routePoints[currentSegment];
+                end = routePoints[(currentSegment + 1) % routePoints.length];
+            }
+
+            let lat = start[0] + (end[0] - start[0]) * progress;
+            let lng = start[1] + (end[1] - start[1]) * progress;
+
+            runner.setLatLng([lat, lng]);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+    </script>
+</body>
+</html>
