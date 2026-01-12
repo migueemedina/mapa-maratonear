@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maratonear - El Mejor Recorrido Palermo</title>
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --brand-color: #FF4500; 
@@ -22,141 +19,66 @@
         #map { height: 100vh; width: 100%; z-index: 1; }
 
         .brand-header {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            position: absolute; top: 20px; left: 20px; z-index: 1000;
+            display: flex; align-items: center; gap: 10px;
         }
-        
         .brand-logo-text {
-            font-weight: 800;
-            font-size: 24px;
-            color: var(--brand-dark);
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            text-shadow: 2px 2px 0px white; 
+            font-weight: 800; font-size: 24px; color: var(--brand-dark);
+            text-transform: uppercase; letter-spacing: -1px; text-shadow: 2px 2px 0px white; 
         }
-
-        .letter-arg-a {
-            color: var(--arg-celeste);
-            text-shadow: 2px 2px 0px var(--brand-dark); 
-        }
-
-        .letter-arg-r {
-            color: #FFFFFF;
-            text-shadow: 2px 2px 0px var(--brand-dark); 
-        }
-        
+        .letter-arg-a { color: var(--arg-celeste); text-shadow: 2px 2px 0px var(--brand-dark); }
+        .letter-arg-r { color: #FFFFFF; text-shadow: 2px 2px 0px var(--brand-dark); }
         .brand-dot { color: var(--brand-color); }
 
         .feature-card {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: white;
-            width: 90%;
-            max-width: 380px;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-bottom: 4px solid var(--brand-color);
-            transition: transform 0.3s ease;
-            box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; background: white; width: 90%; max-width: 380px; padding: 20px;
+            border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-bottom: 4px solid var(--brand-color); transition: transform 0.3s ease;
+            box-sizing: border-box; 
         }
-
         .feature-card:hover { transform: translateX(-50%) translateY(-5px); }
 
         .card-tag {
-            background: var(--brand-color);
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-bottom: 8px;
+            background: var(--brand-color); color: white; font-size: 10px; font-weight: 700;
+            padding: 4px 8px; border-radius: 4px; text-transform: uppercase;
+            display: inline-block; margin-bottom: 8px;
         }
-
-        .card-title {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--brand-dark);
-            line-height: 1.2;
-        }
-
-        .card-subtitle {
-            margin: 5px 0 15px 0;
-            font-size: 13px;
-            color: #666;
-            font-weight: 400;
-        }
+        .card-title { margin: 0; font-size: 18px; font-weight: 700; color: var(--brand-dark); line-height: 1.2; }
+        .card-subtitle { margin: 5px 0 15px 0; font-size: 13px; color: #666; font-weight: 400; }
 
         .card-stats {
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            margin-bottom: 15px; /* Espacio para el botón nuevo */
+            display: flex; justify-content: space-between; border-top: 1px solid #eee;
+            padding-top: 15px; margin-bottom: 15px; 
         }
-
         .stat-item { text-align: center; }
         .stat-value { font-weight: 700; font-size: 16px; color: var(--brand-dark); display: block; }
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; }
 
-        /* ESTILOS NUEVOS PARA EL BOTÓN */
         .btn-maps {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            background-color: var(--brand-dark);
-            color: white;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 12px 0;
-            border-radius: 8px;
-            text-transform: uppercase;
-            transition: background 0.3s ease;
-            gap: 8px;
+            display: flex; align-items: center; justify-content: center; width: 100%;
+            background-color: var(--brand-dark); color: white; text-decoration: none;
+            font-size: 13px; font-weight: 700; padding: 12px 0; border-radius: 8px;
+            text-transform: uppercase; transition: background 0.3s ease; gap: 8px;
         }
+        .btn-maps:hover { background-color: var(--brand-color); }
 
-        .btn-maps:hover {
-            background-color: var(--brand-color);
-        }
-
-        .runner-marker {
-            display: flex; justify-content: center; align-items: center;
-        }
+        .runner-marker { display: flex; justify-content: center; align-items: center; }
         .dot {
-            width: 12px; height: 12px;
-            background-color: var(--brand-color);
-            border-radius: 50%; z-index: 2;
-            border: 2px solid white;
+            width: 12px; height: 12px; background-color: var(--brand-color);
+            border-radius: 50%; z-index: 2; border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .pulse {
-            position: absolute; width: 12px; height: 12px;
-            background-color: var(--brand-color);
-            border-radius: 50%; z-index: 1; opacity: 0.7;
-            animation: pulse-animation 2s infinite;
+            position: absolute; width: 12px; height: 12px; background-color: var(--brand-color);
+            border-radius: 50%; z-index: 1; opacity: 0.7; animation: pulse-animation 2s infinite;
         }
         @keyframes pulse-animation {
             0% { transform: scale(1); opacity: 0.7; }
             100% { transform: scale(4); opacity: 0; }
         }
-
         .start-flag {
-            font-size: 20px;
-            text-align: center;
-            line-height: 1;
+            font-size: 20px; text-align: center; line-height: 1;
             filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));
         }
 
@@ -194,7 +116,7 @@
             </div>
         </div>
 
-        <a href="https://www.google.com/maps/search/?api=1&query=-34.570633,-58.421051" target="_blank" class="btn-maps">
+        <a id="btn-google-route" href="#" target="_blank" class="btn-maps">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M8 0a.5.5 0 0 1 .5.5v5.243l-1-1a.5.5 0 0 1 .707-.707l1.854 1.854a.5.5 0 0 1 0 .708l-1.854 1.854a.5.5 0 0 1-.707-.707l1-1V.5A.5.5 0 0 1 8 0z"/>
                 <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm0-1A7 7 0 1 1 8 1a7 7 0 0 1 0 14z"/>
@@ -208,17 +130,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        // CONFIGURACIÓN PARA QUE EL MAPA NO SE MUEVA
         var map = L.map('map', { 
-            zoomControl: false, 
-            attributionControl: false,
-            dragging: false,       // Deshabilita arrastrar
-            touchZoom: false,      // Deshabilita zoom táctil
-            doubleClickZoom: false,// Deshabilita doble click
-            scrollWheelZoom: false,// Deshabilita rueda del mouse
-            boxZoom: false,        // Deshabilita zoom de caja
-            keyboard: false,       // Deshabilita teclado
-            tap: false             // Deshabilita toque en móbiles
+            zoomControl: false, attributionControl: false, dragging: false, touchZoom: false,
+            doubleClickZoom: false, scrollWheelZoom: false, boxZoom: false, keyboard: false, tap: false
         });
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -258,38 +172,21 @@
         routePoints.push(startPoint);
 
         var polyline = L.polyline(routePoints, {
-            color: '#FF4500',   
-            weight: 6,
-            opacity: 0.8,
-            lineCap: 'round',
-            lineJoin: 'round',
-            dashArray: '1, 10' 
+            color: '#FF4500', weight: 6, opacity: 0.8, lineCap: 'round', lineJoin: 'round', dashArray: '1, 10' 
         }).addTo(map);
 
-        map.fitBounds(polyline.getBounds(), {
-            paddingTopLeft: [20, 20],
-            paddingBottomRight: [20, 200] 
-        });
+        map.fitBounds(polyline.getBounds(), { paddingTopLeft: [20, 20], paddingBottomRight: [20, 200] });
 
-        var flagIcon = L.divIcon({
-            className: 'start-flag',
-            html: '🏁',
-            iconSize: [25, 25],
-            iconAnchor: [2, 25] 
-        });
+        var flagIcon = L.divIcon({ className: 'start-flag', html: '🏁', iconSize: [25, 25], iconAnchor: [2, 25] });
         L.marker(startPoint, {icon: flagIcon}).addTo(map);
 
         var pulseIcon = L.divIcon({
-            className: 'runner-marker',
-            html: '<div class="pulse"></div><div class="dot"></div>',
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
+            className: 'runner-marker', html: '<div class="pulse"></div><div class="dot"></div>',
+            iconSize: [20, 20], iconAnchor: [10, 10]
         });
         var runner = L.marker(routePoints[0], {icon: pulseIcon}).addTo(map);
 
-        let speed = 0.03; 
-        let currentSegment = 0;
-        let progress = 0; 
+        let speed = 0.03; let currentSegment = 0; let progress = 0; 
 
         function animate() {
             let start = routePoints[currentSegment];
@@ -318,9 +215,26 @@
             runner.setLatLng([lat, lng]);
             requestAnimationFrame(animate);
         }
-
         animate();
 
+        // FUNCIÓN QUE GENERA EL LINK CON LA RUTA
+        function generarLinkGoogleMaps() {
+            const start = routePoints[0];
+            const startStr = `${start[0]},${start[1]}`;
+            
+            // Tomamos una muestra de puntos (1 de cada 7) para definir la ruta sin romper la URL
+            let waypoints = [];
+            for (let i = 5; i < routePoints.length - 5; i += 7) {
+                waypoints.push(`${routePoints[i][0]},${routePoints[i][1]}`);
+            }
+            const waypointsStr = waypoints.join('|');
+
+            // Construimos la URL de Google Maps en modo navegación a pie
+            const url = `https://www.google.com/maps/dir/?api=1&origin=${startStr}&destination=${startStr}&waypoints=${waypointsStr}&travelmode=walking`;
+
+            document.getElementById('btn-google-route').href = url;
+        }
+        generarLinkGoogleMaps();
     </script>
 </body>
 </html>
